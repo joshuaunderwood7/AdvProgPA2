@@ -10,6 +10,7 @@ class matrix
     T** TheMatrix;
     size_t row_count, col_count;
  
+/*
     class matrixRow //allows for matrix[i][j] dereferencing 
     {
         matrix& parent;
@@ -18,18 +19,18 @@ class matrix
             matrixRow(matrix& p, size_t theX) : parent(p), x(theX) {}     // Just init the temp object
             T& operator[](size_t y)  const { return parent.getlocation(x,y);}   // Here we get the value.
     };
-
+*/
 
   public:
     matrix(size_t rows, size_t columns);
     matrix(const matrix& toCopy);
-    const T& operator [](size_t x);
-    T getlocation(size_t row, size_t col);
-    size_t getDemRows(void){return row_count;};
-    size_t getDemCols(void){return col_count;};
+    ~matrix(void);
+    T getlocation(size_t row, size_t col) const;
+    const size_t getDemRows(void) const {return row_count;};
+    const size_t getDemCols(void) const {return col_count;};
 
     //unsigned int is used to disambiguate the matrixRow [] operator
-    matrixRow operator[](unsigned int x) { return matrixRow(*this, x);}
+    T* operator[](size_t x) { return TheMatrix[x];}
 
 };
 
@@ -39,22 +40,28 @@ class matrix
 template <typename T>
 std::ostream& operator << (std::ostream& out, const matrix<T>& obj)
 {
-    size_t rows = obj.getDemRows();
-    size_t cols = obj.getDemCols();
     out << std::endl;
-    for(size_t i = 0; i < rows; ++i)
+    for(size_t i = 0; i < obj.getDemRows(); ++i)
     {
-        for(size_t j = 0; i < cols; ++j)
+        for(size_t j = 0; j < obj.getDemCols(); ++j)
         {
-            out << obj[i][j];
+            out << obj.getlocation(i,j) << " ";
         }
         out << std::endl;
     }
+    return out;
 }
 
 template <typename T>
+matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
+{
+
+}
+template <typename T>
 matrix<T>::matrix(size_t rows, size_t columns)
 {
+    row_count = rows;
+    col_count = columns;
     TheMatrix = new T*[rows];
     for(size_t i = 0; i < rows; ++i)
     {
@@ -83,22 +90,19 @@ matrix<T>::matrix(const matrix& toCopy)
 
 };
 
-/*
 template <typename T>
-class matrix<T>::matrixRow
+matrix::~matrix(void)
 {
-    matrix& parent;
-    size_t   x;
-    public:
-        matrixRow(matrix& p, size_t theX) : parent(p), x(theX) {}     // Just init the temp object
-        T& operator[](size_t y)  const { return parent.getlocation(x,y);}   // Here we get the value.
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       delete TheMatrix[i];
+    }
 };
-*/
 
 template <typename T>
-T getlocation(size_t row, size_t col)
-{
+T matrix<T>::getlocation(size_t row, size_t col) const
+{ return TheMatrix[row][col]; };
 
-}
+
 
 #endif
