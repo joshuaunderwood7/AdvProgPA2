@@ -58,12 +58,9 @@ matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
       for(size_t j = 0; j < result.getDemCols(); ++j)
       {
         result[i][j] = T(0);
-        for(size_t aj = 0; aj < a.getDemCols(); ++aj)
+        for(size_t ajbi = 0; ajbi < a.getDemCols(); ++ajbi)
         {
-          for(size_t bi = 0; bi < b.getDemRows(); ++bi)
-          {
-            result[i][j] += a.getlocation(i,aj) * b.getlocation(bi,j);
-          }
+            result[i][j] += (a.getlocation(i,ajbi) * b.getlocation(ajbi,j));
         } 
       }
     }
