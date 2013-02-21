@@ -9,17 +9,6 @@ class matrix
   private:
     T** TheMatrix;
     size_t row_count, col_count;
- 
-/*
-    class matrixRow //allows for matrix[i][j] dereferencing 
-    {
-        matrix& parent;
-        size_t   x;
-        public:
-            matrixRow(matrix& p, size_t theX) : parent(p), x(theX) {}     // Just init the temp object
-            T& operator[](size_t y)  const { return parent.getlocation(x,y);}   // Here we get the value.
-    };
-*/
 
   public:
     matrix(size_t rows, size_t columns);
@@ -40,7 +29,8 @@ class matrix
 template <typename T>
 std::ostream& operator << (std::ostream& out, const matrix<T>& obj)
 {
-    out << std::endl;
+    out < "inside << \n";
+    out << obj.getDemRows() << "x" << obj.getDemCols() << std::endl;
     for(size_t i = 0; i < obj.getDemRows(); ++i)
     {
         for(size_t j = 0; j < obj.getDemCols(); ++j)
@@ -56,7 +46,35 @@ template <typename T>
 matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
 {
 
+  matrix<T> result = matrix<T>(a.getDemRows(), b.getDemCols());
+
+  if(a.getDemCols() == b.getDemRows())
+  {
+    for(size_t i = 0; i < result.getDemRows(); ++i)
+    {
+      for(size_t j = 0; j < result.getDemCols(); ++j)
+      {
+        result[i][j] = T(0);
+        for(size_t aj = 0; aj < a.getDemCols(); ++aj)
+        {
+          for(size_t bi = 0; bi < b.getDemRows(); ++bi)
+          {
+            result[i][j] += a.getlocation(i,aj) * b.getlocation(bi,j);
+          }
+        } 
+      }
+    }
+    std::cout << result << std::endl;
+    return result;
+  }
+  else
+  { 
+    std::cerr << "Matricies are not proper dimentions to multiply" << std::endl;
+  }
+  return matrix<T>(0,0);
 }
+
+
 template <typename T>
 matrix<T>::matrix(size_t rows, size_t columns)
 {
@@ -84,19 +102,20 @@ matrix<T>::matrix(const matrix& toCopy)
     {
         for(size_t j = 0; i < cols; ++j)
         {
-            TheMatrix[i][j] = toCopy[i][j];
+            TheMatrix[i][j] = toCopy.getlocation(i,j);
         }
     }
 
 };
 
 template <typename T>
-matrix::~matrix(void)
+matrix<T>::~matrix(void)
 {
     for(size_t i = 0; i < row_count; ++i)
     {
        delete TheMatrix[i];
     }
+    delete TheMatrix;
 };
 
 template <typename T>
