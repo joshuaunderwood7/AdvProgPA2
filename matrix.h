@@ -13,6 +13,7 @@ class matrix
     size_t row_count, col_count;
 
   public:
+    matrix();
     matrix(size_t rows, size_t columns);
     matrix(const matrix& toCopy);
     ~matrix(void);
@@ -66,7 +67,6 @@ matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
         } 
       }
     }
-    std::cout << result << std::endl;
     return result;
   }
   else
@@ -76,6 +76,12 @@ matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
   return matrix<T>(0,0);
 }
 
+template <typename T>
+matrix<T>::matrix()
+{
+    row_count = 0;
+    col_count = 0;
+}
 
 template <typename T>
 matrix<T>::matrix(size_t rows, size_t columns)
@@ -92,17 +98,17 @@ matrix<T>::matrix(size_t rows, size_t columns)
 template <typename T>
 matrix<T>::matrix(const matrix& toCopy)
 {
-    size_t rows = toCopy.getDemRows();
-    size_t cols = toCopy.getDemCols();
-    TheMatrix = new T*[rows];
-    for(size_t i = 0; i < rows; ++i)
+    row_count = toCopy.getDemRows();
+    col_count = toCopy.getDemCols();
+    TheMatrix = new T*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
     {
-       TheMatrix[i] = new T[cols];
+       TheMatrix[i] = new T[col_count];
     }
 
-    for(size_t i = 0; i < rows; ++i)
+    for(size_t i = 0; i < row_count; ++i)
     {
-        for(size_t j = 0; j < cols; ++j)
+        for(size_t j = 0; j < col_count; ++j)
         {
             TheMatrix[i][j] = toCopy.getlocation(i,j);
         }
@@ -112,11 +118,15 @@ matrix<T>::matrix(const matrix& toCopy)
 template <typename T>
 matrix<T>::~matrix(void)
 {
+//    std::cout << row_count << "x" << col_count << std::endl;
     for(size_t i = 0; i < row_count; ++i)
     {
+//    std::cout << " deleting matrix row: " << i << std::endl;
        delete TheMatrix[i];
     }
+//    std::cout << "Now deleting the pointer." << std::endl;
     delete TheMatrix;
+//    underwood::ENTER_TO_CONTINUE();
 };
 
 template <typename T>
