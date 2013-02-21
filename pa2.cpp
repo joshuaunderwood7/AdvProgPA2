@@ -18,8 +18,7 @@ int main(int argc, char** argv)
 
     std::cout << enterThe << std::endl;
     std::cout << neo << std::endl;
-    std::cout << (enterThe * neo) << std::endl;
-    //std::cout << enterThe.getDemRows() << std::endl;
-    //std::cout << enterThe.getDemCols() << std::endl;
+    std::cout <<  (enterThe * neo)  << std::endl;
+
     return EXIT_SUCCESS;
 }

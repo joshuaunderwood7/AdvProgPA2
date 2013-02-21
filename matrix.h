@@ -2,6 +2,8 @@
 #define MATRIX_H
 
 #include <iostream>
+#include "pa2functions.h"
+
 
 template <typename T>
 class matrix
@@ -100,12 +102,11 @@ matrix<T>::matrix(const matrix& toCopy)
 
     for(size_t i = 0; i < rows; ++i)
     {
-        for(size_t j = 0; i < cols; ++j)
+        for(size_t j = 0; j < cols; ++j)
         {
             TheMatrix[i][j] = toCopy.getlocation(i,j);
         }
     }
-
 };
 
 template <typename T>
