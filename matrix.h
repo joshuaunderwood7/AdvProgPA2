@@ -2,6 +2,8 @@
 #define MATRIX_H
 
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include "pa2functions.h"
 
 
@@ -14,6 +16,7 @@ class matrix
 
   public:
     matrix();
+    matrix(std::ifstream& filestr);
     matrix(size_t rows, size_t columns);
     matrix(const matrix& toCopy);
     ~matrix(void);
@@ -33,7 +36,7 @@ template <typename T>
 std::ostream& operator << (std::ostream& out, const matrix<T>& obj)
 {
     out < "inside << \n";
-    out << obj.getDemRows() << "x" << obj.getDemCols() << std::endl;
+    out << obj.getDemRows() << " " << obj.getDemCols() << std::endl;
     for(size_t i = 0; i < obj.getDemRows(); ++i)
     {
         for(size_t j = 0; j < obj.getDemCols(); ++j)
@@ -78,6 +81,26 @@ matrix<T>::matrix()
 {
     row_count = 0;
     col_count = 0;
+}
+
+template <typename T>
+matrix<T>::matrix(std::ifstream& filestr)
+{
+    filestr >> row_count;
+    filestr >> col_count;
+    TheMatrix = new T*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       TheMatrix[i] = new T[col_count];
+    }
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            filestr >> TheMatrix[i][j];
+        }
+    }
 }
 
 template <typename T>
