@@ -49,3 +49,14 @@ bool underwood::ENTER_TO_CONTINUE(void)
     std::cout << "Press ENTER to continue.\n"; std::getchar();
     return true;   
 }
+
+bool underwood::PROMPT_U_V(size_t& u, size_t& v)
+{
+    std::cout << "Please enter stating vertex: ";
+    std::cin >> u;
+    std::cout << "Please enter ending vertex: ";
+    std::cin >> v;
+    return true;
+}
+
+

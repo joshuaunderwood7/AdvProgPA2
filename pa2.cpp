@@ -7,12 +7,9 @@
 
 int main(int argc, char** argv)
 {
+  if(argc == 2)
+  {
     underwood::GREETING();
-    matrix<int> enterThe(2,2);
-    enterThe[0][0] = 0;
-    enterThe[1][0] = 1;
-    enterThe[0][1] = 1;
-    enterThe[1][1] = 0;
 
     std::ifstream inputFile;
     inputFile.open("input.txt", std::ios::in);
@@ -22,32 +19,23 @@ int main(int argc, char** argv)
         matrix<int> neo(inputFile);
         inputFile.close();
         std::cout << neo;
+        neo = neo * neo;
         return EXIT_SUCCESS;
     }
     else 
     {
         std::cout << "Failed to open file\n";
-        return 1;
+        return 2;
     }
 
-/*
-    for(int i = 0; i < enterThe.getDemRows(); ++i)
-        for(int j = 0; j < enterThe.getDemCols(); ++j)
-            enterThe[i][j] = (i%2 | j%2 & (i - j)%2);
-*/
-/*
-    matrix<int> neo(3,3);
-    for(int i = 0; i < neo.getDemRows(); ++i)
-        for(int j = 0; j < neo.getDemCols(); ++j)
-            neo[i][j] = (i+9 * j+7);
-*/
+  }
 
-    std::cout << enterThe << std::endl;
-//    std::cout << neo << std::endl;
-    std::cout << enterThe * enterThe << std::endl;;
-//    std::cout << neo.getDemRows() << "x" << neo.getDemCols() << std::endl;
+  else
+  {
 
+    std::cerr << "enter filename as argument\n";
+    return 1;
 
-    return 0;
-    return EXIT_SUCCESS;
+  }
+
 }
