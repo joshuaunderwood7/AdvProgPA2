@@ -56,7 +56,6 @@ bool underwood::PROMPT_U_V(size_t& u, size_t& v)
     std::cin >> u;
     std::cout << "Please enter ending vertex: ";
     std::cin >> v;
-    return true;
 }
 
 

@@ -1,3 +1,4 @@
+//
 #ifndef MATRIX_H
 #define MATRIX_H
 
@@ -6,7 +7,10 @@
 #include <fstream>
 #include "pa2functions.h"
 
-
+/* this class holds Matricies and allows some basic operations on
+*   the matrix: multipilaction and assigment.
+*
+*/
 template <typename T>
 class matrix
 {
@@ -15,183 +19,76 @@ class matrix
     size_t row_count, col_count;
 
   public:
+    //Constructor creates an empty matrix with dementions 0x0
     matrix();
-    matrix(std::ifstream& filestr);
-    matrix(size_t rows, size_t columns);
-    matrix(const matrix& toCopy);
-    ~matrix(void);
-    T getlocation(size_t row, size_t col) const;
-    const size_t getDemRows(void) const {return row_count;};
-    const size_t getDemCols(void) const {return col_count;};
-    bool setDemRows(size_t rows) {row_count = rows;}
-    bool setDemCols(size_t cols) {col_count = cols;}
 
-    //unsigned int is used to disambiguate the matrixRow [] operator
+    //Constructor creates a matrix from an input stream
+    //pre: the format is:
+    //The input data will be in the following format within the file.
+    //6
+    // The number of vertices in the vertex set V.
+    //1 2 3 4 5 6
+    // The vertex set, V, space delimited.
+    //1 2
+    // The number of edges in th edge set E.
+    //1 3
+    // Edge (u, v), one per line, u and v space delimited
+    //1 4
+    //......
+    //post: matrix is created from inout stream
+    matrix(std::ifstream& filestr);
+
+    //creates matrix of given size
+    //pre: given row count and column count
+    //post matrix of given dementions is created with entries equal to zero
+    matrix(size_t rows, size_t columns);
+
+    //copys a matrix
+    //pre: input a created matrix of this type
+    //post: a copy of input matrix
+    matrix(const matrix& toCopy);
+
+    //properly frees memory
+    ~matrix(void);
+
+    //pre: given input row and column within the boundries of the matrix
+    //post: copy of element at [row][column] is returned
+    T getlocation(size_t row, size_t col) const;
+
+    //pre: none
+    //post: returns the created number of rows
+    const size_t getDemRows(void) const {return row_count;};
+    
+    //pre: none
+    //post: returns the created number of columns
+    const size_t getDemCols(void) const {return col_count;};
+
+//    bool setDemRows(size_t rows) {row_count = rows;} //not used
+//    bool setDemCols(size_t cols) {col_count = cols;} //not used
+
+    //pre: given input matrix[row][column] within the boundries of the matrix
+    //post: copy of element at [row][column] is returned
     T* operator[](size_t x) { return TheMatrix[x];}
+    
+    
+    //assigns a matrix
+    //pre: input a created matrix of this type
+    //post: original matrix is properly destructed, then a copy of input matrix
+    //is made.
     matrix<T>& operator = (const matrix<T>& toCopy);
 
 };
 
+//calulates shortest path between two nodes in a graph when the graph is
+//represented as a matrix.
+//pre: matrix must be a adjacency matrix representation of a graph where
+//element [u][v] represents the number of edges from u to v.
+//post: the shortet path from u to v is output to the screen via standard
+//output, along with a short annotation  
 template <typename T>
-size_t CALCULATE_SHORTEST_PATH(matrix<T> Matrix, size_t from, size_t to);
+size_t CALCULATE_SHORTEST_PATH(const matrix<T>& input, size_t from, size_t to, size_t max_len=100);
 
 #include "matrix.tem"
 
-//------------------cut and put into matrix.tem----------
-
-template <typename T>
-std::ostream& operator << (std::ostream& out, const matrix<T>& obj)
-{
-    out << obj.getDemRows() << " " << obj.getDemCols() << std::endl;
-    for(size_t i = 0; i < obj.getDemRows(); ++i)
-    {
-        for(size_t j = 0; j < obj.getDemCols(); ++j)
-        {
-            out << obj.getlocation(i,j) << " ";
-        }
-        out << std::endl;
-    }
-    return out;
-}
-
-template <typename T>
-matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
-{
-
-  matrix<T> result = matrix<T>(a.getDemRows(), b.getDemCols());
-
-  if(a.getDemCols() == b.getDemRows())
-  {
-    for(size_t i = 0; i < result.getDemRows(); ++i)
-    {
-      for(size_t j = 0; j < result.getDemCols(); ++j)
-      {
-        result[i][j] = T(0);
-        for(size_t ajbi = 0; ajbi < a.getDemCols(); ++ajbi)
-        {
-            result[i][j] += (a.getlocation(i,ajbi) * b.getlocation(ajbi,j));
-        } 
-      }
-    }
-    return result;
-  }
-  else
-  { 
-    std::cerr << "Matricies are not proper dimentions to multiply" << std::endl;
-  }
-  return matrix<T>(0,0);
-}
-
-template <typename T>
-matrix<T>& matrix<T>::operator = (const matrix<T>& toCopy)
-{
-    for(size_t i = 0; i < row_count; ++i)
-    {
-       delete TheMatrix[i];
-    }
-    delete TheMatrix;
-
-    row_count = toCopy.getDemRows();
-    col_count = toCopy.getDemCols();
-    TheMatrix = new T*[row_count];
-    for(size_t i = 0; i < row_count; ++i)
-    {
-       TheMatrix[i] = new T[col_count];
-    }
-
-    for(size_t i = 0; i < row_count; ++i)
-    {
-        for(size_t j = 0; j < col_count; ++j)
-        {
-            TheMatrix[i][j] = toCopy.getlocation(i,j);
-        }
-    }
-}
-
-template <typename T>
-matrix<T>::matrix()
-{
-    row_count = 0;
-    col_count = 0;
-}
-
-template <typename T>
-matrix<T>::matrix(std::ifstream& filestr)
-{
-    filestr >> row_count;
-    filestr >> col_count;
-    TheMatrix = new T*[row_count];
-    for(size_t i = 0; i < row_count; ++i)
-    {
-       TheMatrix[i] = new T[col_count];
-    }
-
-    for(size_t i = 0; i < row_count; ++i)
-    {
-        for(size_t j = 0; j < col_count; ++j)
-        {
-            filestr >> TheMatrix[i][j];
-        }
-    }
-}
-
-template <typename T>
-matrix<T>::matrix(size_t rows, size_t columns)
-{
-    row_count = rows;
-    col_count = columns;
-    TheMatrix = new T*[rows];
-    for(size_t i = 0; i < rows; ++i)
-    {
-       TheMatrix[i] = new T[columns];
-    }
-};
-
-template <typename T>
-matrix<T>::matrix(const matrix& toCopy)
-{
-    row_count = toCopy.getDemRows();
-    col_count = toCopy.getDemCols();
-    TheMatrix = new T*[row_count];
-    for(size_t i = 0; i < row_count; ++i)
-    {
-       TheMatrix[i] = new T[col_count];
-    }
-
-    for(size_t i = 0; i < row_count; ++i)
-    {
-        for(size_t j = 0; j < col_count; ++j)
-        {
-            TheMatrix[i][j] = toCopy.getlocation(i,j);
-        }
-    }
-};
-
-template <typename T>
-matrix<T>::~matrix(void)
-{
-    for(size_t i = 0; i < row_count; ++i)
-    {
-       delete TheMatrix[i];
-    }
-    delete TheMatrix;
-};
-
-template <typename T>
-T matrix<T>::getlocation(size_t row, size_t col) const
-{ return TheMatrix[row][col]; };
-
-template <typename T>
-size_t CALCULATE_SHORTEST_PATH(matrix<T> Matrix, size_t from, size_t to)
-{
-    size_t p = 1;
-    while(Matrix[from][to] <= 0)
-    {
-        Matrix = Matrix * Matrix;
-        p++;
-    }
-    return p;
-
-}
-
 #endif
+

@@ -1,0 +1,225 @@
+
+template <typename T>
+std::ostream& operator << (std::ostream& out, const matrix<T>& obj)
+{
+    out << obj.getDemRows() << "x" << obj.getDemCols() << std::endl;
+    for(size_t i = 0; i < obj.getDemRows(); ++i)
+    {
+        for(size_t j = 0; j < obj.getDemCols(); ++j)
+        {
+            out << obj.getlocation(i,j) << " ";
+        }
+        out << std::endl;
+    }
+    return out;
+}
+
+template <typename T>
+matrix<T> operator * (const matrix<T>&a, const matrix<T>& b)
+{
+
+  matrix<T> result = matrix<T>(a.getDemRows(), b.getDemCols());
+
+  if(a.getDemCols() == b.getDemRows())
+  {
+    for(size_t i = 0; i < result.getDemRows(); ++i)
+    {
+      for(size_t j = 0; j < result.getDemCols(); ++j)
+      {
+        result[i][j] = T(0);
+        for(size_t ajbi = 0; ajbi < a.getDemCols(); ++ajbi)
+        {
+            result[i][j] += (a.getlocation(i,ajbi) * b.getlocation(ajbi,j));
+        } 
+      }
+    }
+    return result;
+  }
+  else
+  { 
+    std::cerr << "Matricies are not proper dimentions to multiply" << std::endl;
+  }
+  return matrix<T>(0,0);
+}
+
+template <typename T>
+matrix<T>& matrix<T>::operator = (const matrix<T>& toCopy)
+{
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       delete TheMatrix[i];
+    }
+    delete TheMatrix;
+
+    row_count = toCopy.getDemRows();
+    col_count = toCopy.getDemCols();
+    TheMatrix = new T*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       TheMatrix[i] = new T[col_count];
+    }
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = toCopy.getlocation(i,j);
+        }
+    }
+}
+
+template <typename T>
+matrix<T>::matrix()
+{
+    row_count = 0;
+    col_count = 0;
+}
+
+template <typename T>
+matrix<T>::matrix(std::ifstream& filestr)
+{
+    filestr >> row_count;
+     col_count = row_count;
+    TheMatrix = new T*[row_count];
+    T vertex_remover;               //used to remove verticies from input file 
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        filestr >> vertex_remover;
+        vertex_remover = T(0);     //Vertex is not important for this program
+        TheMatrix[i] = new T[col_count];
+    }
+
+    size_t row, col;
+    size_t edge_count;
+    filestr >> edge_count;
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = T(0);
+        }
+    }
+
+    for(size_t i = 0; i < edge_count; ++i)
+    {
+        filestr >> row;
+        filestr >> col;
+        TheMatrix[row-1][col-1]++; 
+        TheMatrix[col-1][row-1]++; 
+    }
+    
+}
+
+template <>
+matrix<int>::matrix(std::ifstream& filestr)
+{
+    std::cout << "\nThis is an int specialization\n\n";
+    filestr >> row_count;
+     col_count = row_count;
+    TheMatrix = new int*[row_count];
+    int vertex_remover;               //used to remove verticies from input file 
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        filestr >> vertex_remover;
+        vertex_remover = int(0);     //Vertex is not important for this program
+        TheMatrix[i] = new int[col_count];
+    }
+
+    size_t row, col;
+    size_t edge_count;
+    filestr >> edge_count;
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = int(0);
+        }
+    }
+
+    for(size_t i = 0; i < edge_count; ++i)
+    {
+        filestr >> row;
+        filestr >> col;
+        TheMatrix[col-1][row-1]++; 
+        TheMatrix[row-1][col-1]++; 
+    }
+    
+}
+
+
+
+template <typename T>
+matrix<T>::matrix(size_t rows, size_t columns)
+{
+    row_count = rows;
+    col_count = columns;
+    TheMatrix = new T*[rows];
+    for(size_t i = 0; i < rows; ++i)
+    {
+       TheMatrix[i] = new T[columns];
+    }
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = T(0);
+        }
+    }
+};
+
+template <typename T>
+matrix<T>::matrix(const matrix& toCopy)
+{
+    row_count = toCopy.getDemRows();
+    col_count = toCopy.getDemCols();
+    TheMatrix = new T*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       TheMatrix[i] = new T[col_count];
+    }
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = toCopy.getlocation(i,j);
+        }
+    }
+};
+
+template <typename T>
+matrix<T>::~matrix(void)
+{
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       delete TheMatrix[i];
+    }
+    delete TheMatrix;
+};
+
+template <typename T>
+T matrix<T>::getlocation(size_t row, size_t col) const
+{ return TheMatrix[row][col]; };
+
+template <typename T>
+size_t CALCULATE_SHORTEST_PATH(const matrix<T>& input, size_t from, size_t to, size_t max_len=100)
+{
+    from--; to--;   //because real Matricies are not 0 based;
+    matrix<T> Matrix = input;
+    size_t p = 1;
+    while(Matrix[from][to] <= 0 && p < 100)
+    {
+        Matrix = Matrix * input;
+        p++;
+    }
+    if(p==100)
+    {
+        std::cerr << "p = " << max_len << ", as max length\n";
+    }
+    return p;
+
+};
+
+
