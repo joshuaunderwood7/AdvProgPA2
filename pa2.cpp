@@ -19,11 +19,8 @@ int main(int argc, char** argv)
 
     if(inputFile.is_open())
     {
-        std::cout << "reading file: 1\n";
         matrix<int> neo(inputFile);
-        std::cout << "reading file: 2\n";
         inputFile.close();
-        std::cout << "reading file: 3\n";
         std::cout << neo;
         return EXIT_SUCCESS;
     }
