@@ -34,6 +34,7 @@ class matrix
 
 template <typename T>
 size_t CALCULATE_SHORTEST_PATH(matrix<T> Matrix, size_t from, size_t to);
+
 #include "matrix.tem"
 
 //------------------cut and put into matrix.tem----------
@@ -187,7 +188,7 @@ size_t CALCULATE_SHORTEST_PATH(matrix<T> Matrix, size_t from, size_t to)
     while(Matrix[from][to] <= 0)
     {
         Matrix = Matrix * Matrix;
-        ++p;
+        p++;
     }
     return p;
 

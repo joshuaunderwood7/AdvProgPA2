@@ -19,7 +19,10 @@ int main(int argc, char** argv)
         matrix<int> neo(inputFile);
         inputFile.close();
         std::cout << neo;
-        neo = neo * neo;
+        size_t u,v;
+        underwood::PROMPT_U_V(u,v);
+        std::cout << "The shortest path from " << u << " to " << v << "; p = "
+                  << CALCULATE_SHORTEST_PATH(neo, 0, 1) << std::endl;
         return EXIT_SUCCESS;
     }
     else 
