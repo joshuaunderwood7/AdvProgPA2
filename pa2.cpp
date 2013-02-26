@@ -41,13 +41,12 @@ int main(int argc, char** argv)
               << "1. The input data will be in the following format within the file.\n"
               << "6\n"
               << "// The number of vertices in the vertex set V.\n"
-              << "1 2 3 4 5 6\n"
+              << "1 2 3 4 5 6\t"
               << "// The vertex set, V, space delimited.\n"
-              << "1 2\n" << "// The number of edges in th edge set E.\n"
-              << "1 3\n" << "// Edge (u, v), one per line, u and v space delimited\n"
-              << "1 4\n" << "......" << std::endl;
+              << "12\t" << "// The number of edges in th edge set E.\n"
+              << "1 3\t" << "// Edge (u, v), one per line, u and v space delimited\n"
+              << "1 4\t" << "......" << std::endl;
     return 1;
 
   }
-
 }
