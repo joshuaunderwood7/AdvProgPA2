@@ -111,45 +111,6 @@ matrix<T>::matrix(std::ifstream& filestr)
     
 }
 
-template <>
-matrix<int>::matrix(std::ifstream& filestr)
-{
-    std::cout << "\nThis is an int specialization\n\n";
-    filestr >> row_count;
-     col_count = row_count;
-    TheMatrix = new int*[row_count];
-    int vertex_remover;               //used to remove verticies from input file 
-    for(size_t i = 0; i < row_count; ++i)
-    {
-        filestr >> vertex_remover;
-        vertex_remover = int(0);     //Vertex is not important for this program
-        TheMatrix[i] = new int[col_count];
-    }
-
-    size_t row, col;
-    size_t edge_count;
-    filestr >> edge_count;
-
-    for(size_t i = 0; i < row_count; ++i)
-    {
-        for(size_t j = 0; j < col_count; ++j)
-        {
-            TheMatrix[i][j] = int(0);
-        }
-    }
-
-    for(size_t i = 0; i < edge_count; ++i)
-    {
-        filestr >> row;
-        filestr >> col;
-        TheMatrix[col-1][row-1]++; 
-        TheMatrix[row-1][col-1]++; 
-    }
-    
-}
-
-
-
 template <typename T>
 matrix<T>::matrix(size_t rows, size_t columns)
 {
@@ -202,6 +163,173 @@ matrix<T>::~matrix(void)
 template <typename T>
 T matrix<T>::getlocation(size_t row, size_t col) const
 { return TheMatrix[row][col]; };
+
+
+//---------int specialization------------
+
+template <>
+std::ostream& operator << (std::ostream& out, const matrix<int>& obj)
+{
+    out << obj.getDemRows() << "x" << obj.getDemCols() << std::endl;
+    for(size_t i = 0; i < obj.getDemRows(); ++i)
+    {
+        for(size_t j = 0; j < obj.getDemCols(); ++j)
+        {
+            out << obj.getlocation(i,j) << " ";
+        }
+        out << std::endl;
+    }
+    return out;
+}
+
+template <>
+matrix<int> operator * (const matrix<int>&a, const matrix<int>& b)
+{
+
+  matrix<int> result = matrix<int>(a.getDemRows(), b.getDemCols());
+
+  if(a.getDemCols() == b.getDemRows())
+  {
+    for(size_t i = 0; i < result.getDemRows(); ++i)
+    {
+      for(size_t j = 0; j < result.getDemCols(); ++j)
+      {
+        result[i][j] = int(0);
+        for(size_t ajbi = 0; ajbi < a.getDemCols(); ++ajbi)
+        {
+            result[i][j] += (a.getlocation(i,ajbi) * b.getlocation(ajbi,j));
+        } 
+      }
+    }
+    return result;
+  }
+  else
+  { 
+    std::cerr << "Matricies are not proper dimentions to multiply" << std::endl;
+  }
+  return matrix<int>(0,0);
+}
+
+matrix<int>& matrix<int>::operator = (const matrix<int>& toCopy)
+{
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       delete TheMatrix[i];
+    }
+    delete TheMatrix;
+
+    row_count = toCopy.getDemRows();
+    col_count = toCopy.getDemCols();
+    TheMatrix = new int*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       TheMatrix[i] = new int[col_count];
+    }
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = toCopy.getlocation(i,j);
+        }
+    }
+}
+
+matrix<int>::matrix()
+{
+    row_count = 0;
+    col_count = 0;
+}
+
+
+matrix<int>::matrix(std::ifstream& filestr)
+{
+    filestr >> row_count;
+     col_count = row_count;
+    TheMatrix = new int*[row_count];
+    int vertex_remover;               //used to remove verticies from input file 
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        filestr >> vertex_remover;
+        vertex_remover = int(0);     //Vertex is not important for this program
+        TheMatrix[i] = new int[col_count];
+    }
+
+    size_t row, col;
+    size_t edge_count;
+    filestr >> edge_count;
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = int(0);
+        }
+    }
+
+    for(size_t i = 0; i < edge_count; ++i)
+    {
+        filestr >> row;
+        filestr >> col;
+        TheMatrix[col-1][row-1]++; 
+        TheMatrix[row-1][col-1]++; 
+    }
+    
+}
+
+
+
+matrix<int>::matrix(size_t rows, size_t columns)
+{
+    row_count = rows;
+    col_count = columns;
+    TheMatrix = new int*[rows];
+    for(size_t i = 0; i < rows; ++i)
+    {
+       TheMatrix[i] = new int[columns];
+    }
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = int(0);
+        }
+    }
+};
+
+matrix<int>::matrix(const matrix& toCopy)
+{
+    row_count = toCopy.getDemRows();
+    col_count = toCopy.getDemCols();
+    TheMatrix = new int*[row_count];
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       TheMatrix[i] = new int[col_count];
+    }
+
+    for(size_t i = 0; i < row_count; ++i)
+    {
+        for(size_t j = 0; j < col_count; ++j)
+        {
+            TheMatrix[i][j] = toCopy.getlocation(i,j);
+        }
+    }
+};
+
+matrix<int>::~matrix(void)
+{
+    for(size_t i = 0; i < row_count; ++i)
+    {
+       delete TheMatrix[i];
+    }
+    delete TheMatrix;
+};
+
+int matrix<int>::getlocation(size_t row, size_t col) const
+{ return TheMatrix[row][col]; };
+
+
+//---------Matrix.h function--------
 
 template <typename T>
 size_t CALCULATE_SHORTEST_PATH(const matrix<T>& input, size_t from, size_t to, size_t max_len=100)
